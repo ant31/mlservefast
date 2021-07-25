@@ -6,10 +6,8 @@ import logging
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
-from mlservefast.config import GCONFIG
 
 router = APIRouter(prefix="/api/v1", tags=["mlservefast"])
-
 logger = logging.getLogger(__name__)
 
 
