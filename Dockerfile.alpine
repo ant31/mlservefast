@@ -1,0 +1,23 @@
+FROM alpine:edge
+
+ENV workdir=/app
+RUN apk --no-cache --update add openssl ca-certificates python3 py-pip
+RUN apk --no-cache add --virtual build-dependencies  \
+    libffi-dev build-base openssl-dev bash git make \
+    tiff-dev jpeg-dev openjpeg-dev zlib-dev freetype-dev lcms2-dev \
+    libwebp-dev tcl-dev tk-dev harfbuzz-dev fribidi-dev libimagequant-dev \
+    libxcb-dev libpng-dev  gcc musl-dev python3-dev \
+    tesseract-ocr ocrmypdf rust cargo libxml2-dev libxslt-dev g++ \
+    py3-pikepdf py3-pocketsphinx py3-lxml py3-pillow qpdf-dev qpdf swig poppler-utils
+
+
+
+RUN pip install pip -U
+RUN rm -rf $workdir
+RUN mkdir -p $workdir
+COPY . $workdir
+WORKDIR $workdir
+RUN pip install -r requirements_dev.txt
+RUN pip install -r requirements.txt
+RUN pytest
+CMD ["./run-server.sh"]

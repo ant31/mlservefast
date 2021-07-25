@@ -1,0 +1,15 @@
+black
+pep8
+isort
+bumpversion
+flake8
+pylint
+pyre-check
+pyre-extensions
+pyright
+pytest
+pytest-cov
+pytest-ordering
+coverage
+bumpversion
+requests-mock

@@ -1,0 +1,89 @@
+---
+stages:
+  - build-containers
+  - test
+  - tag
+  - deploy
+include:
+  - local: '/.gitlab-ci/build-image.yaml'
+
+
+variables:
+  FAILFASTCI_NAMESPACE: ant31
+  IMAGE_NAME: img.conny.dev/ant31/mlservefast
+  APPNAME: mlservefast
+  APP: mlservefast
+  DEFAULT_TAG: tmp.$CI_COMMIT_REF_SLUG
+
+
+# BUILD IMAGE
+build image:
+  extends: .build-container
+
+
+# RUN TEST
+unit test:
+  image:
+    name: img.conny.dev/conny/ibanchecker:build
+  stage: build-containers
+  script:
+    - pytest --cov=$APP --cov-report=html --cov-report=term-missing  --verbose tests --junitxml=report.xml
+    - coverage xml
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
+      cobertura: coverage.xml
+  tags:
+    - kubernetes
+
+
+code lint:
+  image:
+    name: img.conny.dev/conny/ibanchecker:build
+  stage: build-containers
+  script:
+    - make check
+  tags:
+    - kubernetes
+
+test image:
+  image:
+    name: $IMAGE_NAME:v$CI_COMMIT_REF_SLUG
+  needs:
+    - "build image"
+  stage: test
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - cd /app
+    - make test
+  tags:
+    - kubernetes
+
+# TAGS IMAGES
+ibanchecker tag gitsha:
+  extends: .tag-container
+  variables:
+    DEST_TAG: $CI_COMMIT_SHORT_SHA
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "production"'
+    - if: '$CI_COMMIT_TAG'
+
+ibanchecker tag:
+  extends: .tag-container
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "production"'
+    - if: '$CI_COMMIT_TAG'
+  variables:
+    DEST_TAG: $CI_COMMIT_REF_SLUG
+
+ibanchecker tag latest:
+  extends: .tag-container
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "production"'
+  variables:
+    DEST_TAG: latest
