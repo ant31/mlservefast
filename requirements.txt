@@ -8,3 +8,5 @@ uvicorn
 uvloop
 aiohttp
 async-timeout
+mlflow
+starlette_exporter

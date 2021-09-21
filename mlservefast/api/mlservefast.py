@@ -18,3 +18,8 @@ class Item(BaseModel):
 @router.post("/info", response_model=Item)
 async def check_validity():
     return {"info": "implementMe"}
+
+
+@router.post("/invocations", response_model=Item)
+async def check_validity():
+    return {"info": "implementMe"}

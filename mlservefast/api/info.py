@@ -23,6 +23,15 @@ async def index():
     return await version()
 
 
+@router.get("/ping", tags=["info"])
+async def index():
+    return await version()
+
+@router.get("/_health", tags=["info"])
+async def index():
+    return await version()
+
+
 @router.get("/error", tags=["debug"])
 async def gen_error():
     raise Forbidden("test")

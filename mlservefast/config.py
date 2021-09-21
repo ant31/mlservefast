@@ -61,7 +61,12 @@ MLSERVEFAST_CONF_DIR = os.getenv(
     "MLSERVEFAST_CONF_DIR", os.path.join(MLSERVEFAST_ROOT_DIR, "conf/")
 )
 MLSERVEFAST_CONF_FILE = os.getenv("MLSERVEFAST_CONF_FILE", None)
-MLSERVEFAST_DOWNLOAD_DIR = os.getenv("MLSERVEFAST_DOWNLOAD_DIR", "/tmp/mlservefast")
+MLSERVEFAST_TMP_DIR = os.getenv("MLSERVEFAST_TMP_DIR", "/tmp/mlservefast")
+
+PROMETHEUS_MULTIPROC_DIR = os.getenv(
+    "PROMETHEUS_MULTIPROC_DIR", os.path.join(MLSERVEFAST_TMP_DIR, "prometheus")
+)
+os.environ["PROMETHEUS_MULTIPROC_DIR"] = PROMETHEUS_MULTIPROC_DIR
 
 
 class MLServeFastConfig:
@@ -75,7 +80,8 @@ class MLServeFastConfig:
                 "debug": False,
                 "env": APP_ENVIRON,
                 "url": MLSERVEFAST_API,
-                "download_dir": MLSERVEFAST_DOWNLOAD_DIR,
+                "tmp_dir": MLSERVEFAST_TMP_DIR,
+                "prometheus_dir": PROMETHEUS_MULTIPROC_DIR,
             },
         }
 
